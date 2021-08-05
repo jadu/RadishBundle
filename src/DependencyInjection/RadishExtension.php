@@ -2,9 +2,9 @@
 
 namespace Radish\RadishBundle\DependencyInjection;
 
+use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\DefinitionDecorator;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -17,8 +17,8 @@ class RadishExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('services.yml');
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../../config'));
+        $loader->load('services.yaml');
 
         $this->loadConnection($config['connection'], $container);
 
@@ -62,7 +62,7 @@ class RadishExtension extends Extension
             $workers[$queueName] = new Reference($queue['worker']);
         }
 
-        $definition = new DefinitionDecorator('radish.consumer');
+        $definition = new ChildDefinition('radish.consumer');
 
         $args = [
             array_keys($consumer['queues']),
@@ -71,6 +71,7 @@ class RadishExtension extends Extension
         ];
 
         $definition->setArguments($args);
+        $definition->addTag('radish.consumer', ['key' => $name]);
 
         $container->setDefinition(sprintf('radish.consumer.%s', $name), $definition);
     }
@@ -82,7 +83,7 @@ class RadishExtension extends Extension
             $workers[$queueName] = new Reference($queue['worker']);
         }
 
-        $definition = new DefinitionDecorator('radish.poller');
+        $definition = new ChildDefinition('radish.poller');
 
         $args = [
             array_keys($poller['queues']),
@@ -92,13 +93,14 @@ class RadishExtension extends Extension
         ];
 
         $definition->setArguments($args);
+        $definition->addTag('radish.poller', ['key' => $name]);
 
         $container->setDefinition(sprintf('radish.poller.%s', $name), $definition);
     }
 
     private function loadProducer($name, array $producer, ContainerBuilder $container)
     {
-        $definition = new DefinitionDecorator('radish.producer');
+        $definition = new ChildDefinition('radish.producer');
         $definition->setArguments([
             $producer['exchange']
         ]);

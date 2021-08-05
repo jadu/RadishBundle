@@ -31,6 +31,8 @@ parameters:
     radish.command.setup.class: "Radish\\RadishBundle\\Command\\SetupCommand"
 
 services:
+    '%radish.broker.queue_loader.class%': '@radish.broker.queue_loader'
+
     radish.broker.amqp_factory:
         class: "%radish.broker.amqp_factory.class%"
 
@@ -185,12 +187,17 @@ services:
 
     radish.command.consume:
         class: "%radish.command.consume.class%"
+        arguments: [!tagged_locator { tag: 'radish.consumer', index_by: 'key'}]
+        public: true
 
     radish.command.poll:
         class: "%radish.command.poll.class%"
+        arguments: [!tagged_locator { tag: 'radish.poller', index_by: 'key'}]
+        public: true
 
     radish.command.setup:
         class: "%radish.command.setup.class%"
         arguments:
             - "@radish.broker.exchange_registry"
             - "@radish.broker.queue_registry"
+        public: true

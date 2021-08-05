@@ -22,4 +22,9 @@ class RadishBundle extends Bundle
         $application->add($this->container->get('radish.command.poll'));
         $application->add($this->container->get('radish.command.setup'));
     }
+
+    public function getPath(): string
+    {
+        return \dirname(__DIR__);
+    }
 }

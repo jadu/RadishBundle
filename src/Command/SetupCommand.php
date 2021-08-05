@@ -2,16 +2,13 @@
 
 namespace Radish\RadishBundle\Command;
 
-use Radish\Broker\Connection;
 use Radish\Broker\ExchangeRegistry;
 use Radish\Broker\QueueRegistry;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class SetupCommand extends ContainerAwareCommand
+class SetupCommand extends Command
 {
     protected $exchangeRegistry;
     protected $queueRegistry;
