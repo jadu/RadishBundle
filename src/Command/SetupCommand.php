@@ -25,5 +25,7 @@ class SetupCommand extends Command
     {
         $this->exchangeRegistry->setUp();
         $this->queueRegistry->setUp();
+
+        return 0;
     }
 }

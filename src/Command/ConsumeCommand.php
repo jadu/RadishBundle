@@ -30,5 +30,7 @@ class ConsumeCommand extends Command
     {
         $consumerName = $input->getArgument('consumer');
         $this->container->get(sprintf('radish.consumer.%s', $consumerName))->consume();
+
+        return 0;
     }
 }

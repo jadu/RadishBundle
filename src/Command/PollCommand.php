@@ -30,5 +30,7 @@ class PollCommand extends Command
     {
         $consumerName = $input->getArgument('poller');
         $this->container->get(sprintf('radish.poller.%s', $consumerName))->consume();
+
+        return 0;
     }
 }
