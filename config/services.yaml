@@ -85,6 +85,7 @@ services:
 
     radish.middleware.ack:
         class: "%radish.middleware.ack.class%"
+        public: true
         arguments:
             - "@logger"
         tags:
@@ -93,6 +94,7 @@ services:
 
     radish.middleware.doctrine.connection:
         class: "%radish.middleware.doctrine.connection.class%"
+        public: true
         arguments:
             - ["@doctrine.dbal.default_connection"]
             - "@logger"
@@ -102,6 +104,7 @@ services:
 
     radish.middleware.doctrine.object_manager:
         class: "%radish.middleware.doctrine.object_manager.class%"
+        public: true
         arguments:
             - "@doctrine"
             - "@logger"
@@ -111,6 +114,7 @@ services:
 
     radish.middleware.exception_catcher:
         class: "%radish.middleware.exception_catcher.class%"
+        public: true
         arguments:
             - "@logger"
         tags:
@@ -119,6 +123,7 @@ services:
 
     radish.middleware.logger:
         class: "%radish.middleware.logger.class%"
+        public: true
         arguments:
             - "@logger"
         tags:
@@ -127,6 +132,7 @@ services:
 
     radish.middleware.max_execution_time:
         class: "%radish.middleware.max_execution_time.class%"
+        public: true
         arguments:
             - "@logger"
         tags:
@@ -135,6 +141,7 @@ services:
 
     radish.middleware.max_messages:
         class: "%radish.middleware.max_messages.class%"
+        public: true
         arguments:
             - "@logger"
         tags:
@@ -143,6 +150,7 @@ services:
 
     radish.middleware.memory_limit:
         class: "%radish.middleware.memory_limit.class%"
+        public: true
         arguments:
             - "@logger"
         tags:
@@ -151,6 +159,7 @@ services:
 
     radish.middleware.non_blocking_retry:
         class: "%radish.middleware.non_blocking_retry.class%"
+        public: true
         arguments:
             - "@radish.broker.exchange_registry"
             - "@logger"
@@ -160,6 +169,7 @@ services:
 
     radish.middleware.retry:
         class: "%radish.middleware.retry.class%"
+        public: true
         arguments:
             - "@radish.broker.exchange_registry"
             - "@logger"
@@ -169,6 +179,7 @@ services:
 
     radish.middleware.signal_handler:
         class: "%radish.middleware.signal_handler.class%"
+        public: true
         arguments:
             - "@logger"
         tags:

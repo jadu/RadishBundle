@@ -71,7 +71,7 @@ class RadishExtension extends Extension
         ];
 
         $definition->setArguments($args);
-        $definition->addTag('radish.consumer', ['key' => $name]);
+        $definition->addTag('radish.consumer', ['key' => sprintf('radish.consumer.%s', $name)]);
 
         $container->setDefinition(sprintf('radish.consumer.%s', $name), $definition);
     }
@@ -93,7 +93,7 @@ class RadishExtension extends Extension
         ];
 
         $definition->setArguments($args);
-        $definition->addTag('radish.poller', ['key' => $name]);
+        $definition->addTag('radish.poller', ['key' => sprintf('radish.poller.%s', $name)]);
 
         $container->setDefinition(sprintf('radish.poller.%s', $name), $definition);
     }
