@@ -2,6 +2,10 @@
 
 namespace Radish\RadishBundle\DependencyInjection;
 
+use Radish\Broker\AMQPFactory;
+use Radish\Broker\Connection;
+use Radish\Broker\ExchangeRegistry;
+use Radish\Broker\QueueRegistry;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -22,13 +26,13 @@ class RadishExtension extends Extension
 
         $this->loadConnection($config['connection'], $container);
 
-        $container->getDefinition('radish.broker.exchange_registry')->setArguments([
-            new Reference('radish.broker.connection'),
+        $container->getDefinition(ExchangeRegistry::class)->setArguments([
+            new Reference(Connection::class),
             $config['exchanges']
         ]);
 
-        $container->getDefinition('radish.broker.queue_registry')->setArguments([
-            new Reference('radish.broker.connection'),
+        $container->getDefinition(QueueRegistry::class)->setArguments([
+            new Reference(Connection::class),
             $config['queues']
         ]);
 
@@ -48,13 +52,13 @@ class RadishExtension extends Extension
 
     private function loadConnection(array $connection, ContainerBuilder $container)
     {
-        $definition = new Definition($container->getParameter('radish.broker.connection.class'));
+        $definition = new Definition(Connection::class);
         $definition->setArguments([
-            new Reference('radish.broker.amqp_factory'),
+            new Reference(AMQPFactory::class),
             $connection
         ]);
 
-        $container->setDefinition('radish.broker.connection', $definition);
+        $container->setDefinition(Connection::class, $definition);
     }
 
     private function loadConsumer($name, array $consumer, ContainerBuilder $container)
