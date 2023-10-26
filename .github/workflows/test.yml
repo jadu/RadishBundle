@@ -20,9 +20,6 @@ jobs:
           - '8.2'
 
     steps:
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-version }}
       - uses: actions/checkout@v3
       - uses: php-actions/composer@v6
         with:
@@ -32,5 +29,3 @@ jobs:
         uses: php-actions/phpunit@v3
         with:
           version: 9.6
-          php_version: ${{ matrix.php-version }}
-          php_extensions: "amqp"
