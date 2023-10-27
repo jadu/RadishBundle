@@ -2,20 +2,23 @@
 
 namespace Radish\RadishBundle\Command;
 
-use Radish\Broker\Connection;
-use Radish\Broker\ExchangeRegistry;
-use Radish\Broker\QueueRegistry;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Psr\Container\ContainerInterface;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class PollCommand extends ContainerAwareCommand
+class PollCommand extends Command
 {
-    public function __construct()
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    public function __construct(ContainerInterface $container)
     {
         parent::__construct('radish:poll');
+        $this->container = $container;
     }
 
     public function configure()
@@ -26,6 +29,8 @@ class PollCommand extends ContainerAwareCommand
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $consumerName = $input->getArgument('poller');
-        $this->getContainer()->get(sprintf('radish.poller.%s', $consumerName))->consume();
+        $this->container->get(sprintf('radish.poller.%s', $consumerName))->consume();
+
+        return 0;
     }
 }

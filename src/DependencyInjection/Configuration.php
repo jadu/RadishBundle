@@ -2,7 +2,6 @@
 
 namespace Radish\RadishBundle\DependencyInjection;
 
-use Symfony\Component\Config\Definition\ArrayNode;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -10,10 +9,9 @@ class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('radish');
+        $treeBuilder = new TreeBuilder('radish');
 
-        $rootNode
+        $treeBuilder->getRootNode()
             ->children()
                 ->arrayNode('connection')
                     ->addDefaultsIfNotSet()
@@ -43,7 +41,7 @@ class Configuration implements ConfigurationInterface
                             ->booleanNode('durable')->defaultTrue()->end()
                             ->scalarNode('type')
                                 ->validate()
-                                ->ifNotInArray(array('direct', 'topic', 'fanout'))
+                                ->ifNotInArray(['direct', 'topic', 'fanout'])
                                     ->thenInvalid('Invalid exchange type "%s"')
                                 ->end()
                             ->end()
@@ -81,9 +79,8 @@ class Configuration implements ConfigurationInterface
 
     private function consumerNode($type)
     {
-        $builder = new TreeBuilder();
-        $node = $builder->root($type);
-
+        $builder = new TreeBuilder($type);
+        $node = $builder->getRootNode();
         $node->requiresAtLeastOneElement()
             ->useAttributeAsKey('name')
             ->prototype('array')

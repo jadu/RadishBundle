@@ -3,6 +3,7 @@
 namespace Radish\RadishBundle\DependencyInjection;
 
 use PHPUnit\Framework\TestCase;
+use Radish\Broker\Connection;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 class RadishExtensionTest extends TestCase
@@ -12,7 +13,7 @@ class RadishExtensionTest extends TestCase
         $container = $this->createContainer();
         $this->loadConfig($container, []);
 
-        $this->assertHasService($container, 'radish.broker.connection');
+        $this->assertHasService($container, Connection::class);
     }
 
     public function testConnectionConfiguration()
@@ -28,7 +29,7 @@ class RadishExtensionTest extends TestCase
             ]
         ]);
 
-        $this->assertHasService($container, 'radish.broker.connection');
+        $this->assertHasService($container, Connection::class);
     }
 
     private function assertHasService(ContainerBuilder $container, $id)

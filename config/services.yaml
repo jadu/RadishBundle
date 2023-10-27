@@ -1,0 +1,175 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    Radish\Broker\AMQPFactory: ~
+
+    Radish\Broker\Connection: ~
+
+    Radish\Broker\Exchange: ~
+
+    Radish\Broker\ExchangeRegistry: ~
+
+    Radish\Broker\Queue: ~
+
+    Radish\Broker\QueueBinding: ~
+
+    Radish\Broker\QueueLoader:
+        arguments: ['@Radish\Broker\QueueRegistry']
+
+    Radish\Broker\QueueRegistry: ~
+
+    radish.consumer:
+        class: Radish\Consumer\Consumer
+        factory: ['@Radish\Consumer\ConsumerFactory', 'create']
+        abstract: true
+
+    Radish\Consumer\Consumer: '@radish.consumer'
+
+    Radish\Consumer\ConsumerFactory:
+        arguments:
+            - '@Radish\Broker\QueueLoader'
+            - '@Radish\Middleware\MiddlewareLoader'
+            - '@logger'
+        tags:
+            - { name: monolog.logger, channel: queue }
+
+    radish.poller:
+        class: Radish\Consumer\Poller
+        factory: ['@Radish\Consumer\PollerFactory', 'create']
+        abstract: true
+
+    Radish\Consumer\Poller: '@radish.poller'
+
+    Radish\Consumer\PollerFactory:
+        arguments:
+            - '@Radish\Broker\QueueLoader'
+            - '@Radish\Middleware\MiddlewareLoader'
+            - '@logger'
+        tags:
+            - { name: monolog.logger, channel: queue }
+
+    Radish\Middleware\Ack\AckMiddleware:
+        public: true
+        arguments:
+            - '@logger'
+        tags:
+            - { name: radish.middleware, middleware: ack }
+            - { name: monolog.logger, channel: queue }
+
+    Radish\Middleware\Doctrine\ConnectionMiddleware:
+        public: true
+        arguments:
+            - ['@doctrine.dbal.default_connection']
+            - '@logger'
+        tags:
+            - { name: radish.middleware, middleware: doctrine_connection }
+            - { name: monolog.logger, channel: queue }
+
+    Radish\Middleware\Doctrine\ObjectManagerMiddleware:
+        public: true
+        arguments:
+            - '@doctrine'
+            - '@logger'
+        tags:
+            - { name: radish.middleware, middleware: doctrine_object_manager }
+            - { name: monolog.logger, channel: queue }
+
+    Radish\Middleware\ExceptionCatcher\ExceptionCatcherMiddleware:
+        public: true
+        arguments:
+            - '@logger'
+        tags:
+            - { name: radish.middleware, middleware: exception_catcher }
+            - { name: monolog.logger, channel: queue }
+
+    Radish\Middleware\Logger\LoggerMiddleware:
+        public: true
+        arguments:
+            - '@logger'
+        tags:
+            - { name: radish.middleware, middleware: logger }
+            - { name: monolog.logger, channel: queue }
+
+    Radish\Middleware\MaxExecutionTime\MaxExecutionTimeMiddleware:
+        public: true
+        arguments:
+            - '@logger'
+        tags:
+            - { name: radish.middleware, middleware: max_execution_time }
+            - { name: monolog.logger, channel: queue }
+
+    Radish\Middleware\MaxMessages\MaxMessagesMiddleware:
+        public: true
+        arguments:
+            - '@logger'
+        tags:
+            - { name: radish.middleware, middleware: max_messages }
+            - { name: monolog.logger, channel: queue }
+
+    Radish\Middleware\MemoryLimit\MemoryLimitMiddleware:
+        public: true
+        arguments:
+            - '@logger'
+        tags:
+            - { name: radish.middleware, middleware: memory_limit }
+            - { name: monolog.logger, channel: queue }
+
+    Radish\Middleware\MiddlewareLoader:
+        arguments: ['@Radish\Middleware\MiddlewareRegistry']
+
+    Radish\Middleware\MiddlewareRegistry:
+        arguments:
+            - '@service_container'
+
+    Radish\Middleware\Retry\NonBlockingRetryMiddleware:
+        public: true
+        arguments:
+            - '@Radish\Broker\ExchangeRegistry'
+            - '@logger'
+        tags:
+            - { name: radish.middleware, middleware: non_blocking_retry }
+            - { name: monolog.logger, channel: queue }
+
+    Radish\Middleware\Retry\RetryMiddleware:
+        public: true
+        arguments:
+            - '@Radish\Broker\ExchangeRegistry'
+            - '@logger'
+        tags:
+            - { name: radish.middleware, middleware: retry }
+            - { name: monolog.logger, channel: queue }
+
+    Radish\Middleware\SignalHandler\SignalHandlerMiddleware:
+        public: true
+        arguments:
+            - '@logger'
+        tags:
+            - { name: radish.middleware, middleware: signal_handler }
+            - { name: monolog.logger, channel: queue }
+
+    radish.producer:
+        class: Radish\Producer\Producer
+        factory: ['@Radish\Producer\ProducerFactory', 'create']
+        abstract: true
+
+    Radish\Producer\Producer: '@radish.producer'
+
+    Radish\Producer\ProducerFactory:
+        arguments:
+            - '@Radish\Broker\ExchangeRegistry'
+
+    Radish\RadishBundle\Command\ConsumeCommand:
+        arguments: [!tagged_locator { tag: 'radish.consumer', index_by: 'key'}]
+        public: true
+
+    Radish\RadishBundle\Command\PollCommand:
+        arguments: [!tagged_locator { tag: 'radish.poller', index_by: 'key'}]
+        public: true
+
+    Radish\RadishBundle\Command\SetupCommand:
+        arguments:
+            - '@Radish\Broker\ExchangeRegistry'
+            - '@Radish\Broker\QueueRegistry'
+        public: true
