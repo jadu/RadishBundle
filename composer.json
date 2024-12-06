@@ -12,7 +12,7 @@
     ],
     "require": {
         "php": ">=8.1",
-        "jadu/radish": "dev-QU-5720",
+        "jadu/radish": "~5.0",
         "symfony/console": "~4.0|~5.0",
         "symfony/dependency-injection": "~4.0|~5.0",
         "symfony/config": "~4.0|~5.0",
